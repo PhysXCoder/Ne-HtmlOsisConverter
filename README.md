@@ -21,3 +21,8 @@ Example: <code>NeueHtmlOsisConverter ~/NeUe ~/gerneue.osis.xml</code>
   - Xiphos: [https://xiphos.org/](https://xiphos.org/), 
   - Ezra: [https://ezrabibleapp.net/](https://ezrabibleapp.net/) 
   - and many more...
+
+## Result
+
+Input HTML file to the left, generated output on the right: ![Input and Output files](InputOutput.png)
+gerneue module viewed in Bibletime: ![Bibletime with NeÜ](Result.png)
