@@ -1,4 +1,4 @@
-# NeÜHtmlOsisConverter
+# NeueHtmlOsisConverter
 
 FOSS program to convert *Neue evangelistische Übersetzung (NeÜ)* of the Bible to OSIS format. Input is HTML files of the Translator Mr. Vanheiden. Output is a single OSIS XML file used by Crosswire Bible Society's SWORD Project to provide the NeÜ Bible.
 
