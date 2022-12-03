@@ -9,7 +9,7 @@ Start the program with 2 command line parameters:
 1. Path to HTML folder containing the NeÜ HTML files
 2. Output file path
 
-Example: <code>NeueHtmlOsisConverter ~/NeUe ~/gerneue.osis.xml</code>
+Example: <code>NeueHtmlOsisConverter /path/to/NeÜ gerneue.osis.xml</code>
 
 ## Links
 - Online version of the NeÜ: [https://neue.derbibelvertrauen.de/](https://neue.derbibelvertrauen.de/)
