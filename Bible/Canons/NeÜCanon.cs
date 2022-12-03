@@ -243,7 +243,7 @@ public class NeÜCanon : ICanon
         {
             0,
             17, 17, 11, 16, 16, 12, 14, 14
-        }, new List<string>() { "Hld", "Hohelied", "Hohelied der Liebe", "Lied der Lieder" }),
+        }, new List<string>() { "Hld", "Hohelied", "Hohes Lied", "Hohelied der Liebe", "Lied der Lieder" }),
 
         new BookInfo(Book.Isaiah, new List<ushort>()
         {
