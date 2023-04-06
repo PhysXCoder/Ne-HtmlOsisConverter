@@ -22,7 +22,7 @@ namespace NeueHtmlOsisConverter.Bible.Canons;
 /// Verse numbers taken from SWORD project's canon.h v 1.9.0
 /// https://www.crosswire.org/sword/develop/index.jsp
 /// </summary>
-public class KjvCanon : ICanon
+public class KjvCanon : CanonBase, ICanon
 {
         
     private readonly IReadOnlyList<BookInfo> _books = new[]
@@ -514,5 +514,5 @@ public class KjvCanon : ICanon
         
     };
 
-    public IReadOnlyList<BookInfo> Books => _books;
+    public override IReadOnlyList<BookInfo> Books => _books;
 }

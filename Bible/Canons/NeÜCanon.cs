@@ -20,7 +20,7 @@ namespace NeueHtmlOsisConverter.Bible.Canons;
 /// <summary>
 /// German Protestant canon, numbers according to "NeÜ - Neue evangelistische Übersetzung".  
 /// </summary>
-public class NeÜCanon : ICanon
+public class NeÜCanon : CanonBase, ICanon
 {
     private readonly IReadOnlyList<BookInfo> _books = new[]
     {
@@ -522,7 +522,7 @@ public class NeÜCanon : ICanon
             0,
             14, 18, 19, 16, 14, 20, 28, 13, 28, 39,
             40, 29, 25
-        }, new List<string>() { "Heb", "Hebräer", "Hebraeer" }),
+        }, new List<string>() { "Heb", "Hebr", "Hebräer", "Hebraeer" }),
 
         new BookInfo(Book.James, new List<ushort>()
         {
@@ -596,5 +596,5 @@ public class NeÜCanon : ICanon
 
     };
 
-    public IReadOnlyList<BookInfo> Books => _books;
+    public override IReadOnlyList<BookInfo> Books => _books;
 }

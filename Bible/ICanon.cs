@@ -23,4 +23,9 @@ public interface ICanon
     /// Every book that is contained in the canon is listed here.
     /// </summary>
     IReadOnlyList<BookInfo> Books { get; }
+
+    /// <summary>
+    /// Gets the next verse (increases verse number by 1. Possible jumps to next chapter.)
+    /// </summary>
+    Verse GetSuccessorVerse(Verse verse);
 }

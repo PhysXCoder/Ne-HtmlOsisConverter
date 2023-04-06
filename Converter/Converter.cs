@@ -58,11 +58,13 @@ public class Converter : IConverter
     // Constants / readonly    
     protected readonly char[] MultipleVerseReferencesSeparators = new char[] {';'};
     protected readonly char[] ChapterVerseSeparators = new char[] {':', ','};
-    protected readonly char[] RangeSeparators = new char[] { '-' };
+    protected readonly char[] RangeSeparators = new char[] { '-', '–' };
     protected readonly char[] AdditionalVerseSeparators = new char[] { '.' };
     protected readonly char[] ValidReferenceCharacters = new char[] { '.', ':', ',', '-', ' ', '\t', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
     protected readonly string[] HyperLinkTokens = new string[] { "http", "https", "ftp", "www", ".com", ".org", ".de", ".gif" };
-    protected readonly string[] SelfReferenceBooknames = new string[] { "kapitel", "kap" };    
+    protected readonly string[] SelfReferenceBooknames = new string[] { "kapitel", "kap", "vers", "verse" };    
+    protected readonly string[] IncludingFollowingVerseString =  new string[] { "ff", "ff.", "ff .", "f", "f.", "f ."};
+    protected readonly string[] IncludingFollowingVersesString = new string[] { "ff", "ff.", "ff ."};
 
     protected const string FootnoteIndicator = "*";
     protected const string FootnoteReferenceSeparator = ":";
@@ -813,13 +815,23 @@ public class Converter : IConverter
         if (string.IsNullOrWhiteSpace(reference)) return new List<VerseReference>();
 
         // Parse excactly 1 reference.
-        // German Bible references: "Mt 1,2" "Mt 1,2-4" "Mt 1,2.3" "Mt 1,2 f." "Mt 1,2 ff." "Mt 1,2;4,3"
+        // German Bible references: "Mt 1,2" "Mt 1,2-4" "Mt 1,2.3" "Mt 1,2 f." "Mt 1,2 ff." "Mt 1,2;4,3" "31,18ff"
         // English references:      "Mt 1:2" "Mt 1:2-4"
 
         // First, split between book name and the rest. Then check if whe have only a book name.
-        int iLastLetter = reference.IndexOfLastLetter();        
-        var afterLastLetter = reference.Substring(iLastLetter+1);
-        if (string.IsNullOrWhiteSpace(afterLastLetter))
+        // But if a chapter/verse separator is found, at the max until the separator (e.g. "Jesaja 40,13f")
+        int iFirstChapterVerseSeparator = reference.IndexOfAny(ChapterVerseSeparators);
+        int iLastBookLetter = -1;
+        if (iFirstChapterVerseSeparator > 0)  
+        {
+            iLastBookLetter = reference.Substring(0, iFirstChapterVerseSeparator-1).IndexOfLastLetter();
+        }
+        else
+        {
+            iLastBookLetter = reference.IndexOfLastLetter();
+        }
+        var afterLastBookLetter = reference.Substring(iLastBookLetter+1);
+        if (string.IsNullOrWhiteSpace(afterLastBookLetter))
         {
             // No chapter or verse number -> complete book is referenced
             ParseReferenceBookText(reference);
@@ -830,8 +842,8 @@ public class Converter : IConverter
         }
 
         // There is a chapter number. First get the book name (maybe empty string).
-        var referenceBookText = reference.Substring(0, iLastLetter+1).Trim();
-        var rest = reference.Substring(iLastLetter+1).Trim();
+        var referenceBookText = reference.Substring(0, iLastBookLetter+1).Trim();
+        var rest = reference.Substring(iLastBookLetter+1).Trim();
         if (SelfReferenceBooknames.Contains(referenceBookText.ToLower()))
         {
             // self-reference
@@ -882,12 +894,45 @@ public class Converter : IConverter
             int iAdditionalVerseSeparator = restAfterSeparator.IndexOfAny(AdditionalVerseSeparators);
             if (iRangeSeparator < 0 && iAdditionalVerseSeparator < 0)
             {
-                // Just a single verse number, e.g. "Mt 1,2"
+                // Just a single verse number, e.g. "Mt 1,2" or "Jesaja 40,13f" (restAfterSeparator is "2" or "13f")
+                // Check for "f" or similar indicating that the following verse(s) shall be included
+                bool includeFollowing = false;
+                bool includeMultiple = false;
+                foreach(var inclusionString in IncludingFollowingVerseString)
+                {
+                    if (restAfterSeparator.EndsWith(inclusionString))
+                    {
+                        includeFollowing = true;
+                        includeMultiple = IncludingFollowingVersesString.Contains(inclusionString);
+                        restAfterSeparator = restAfterSeparator
+                            .Remove(restAfterSeparator.Length - inclusionString.Length, inclusionString.Length)
+                            .Trim();
+                        break;
+                    }
+                }
                 uint verse;
                 if (!uint.TryParse(restAfterSeparator, out verse)) throw new FormatException($"Invalid verse number in reference '{reference}'! " + GetCurrentVerseAsString());
-                return new List<VerseReference>() {
-                    new SingleVerseReference(new Verse((Book)ReferenceBook, chapter, verse), reference)
-                };
+                var targetVerseRef = new SingleVerseReference(new Verse((Book)ReferenceBook, chapter, verse), reference);
+                if (!includeFollowing)
+                {
+                    return new List<VerseReference>() 
+                    {
+                        targetVerseRef
+                    };
+                } 
+                else
+                {
+                    var nextVerse = Canon.GetSuccessorVerse(targetVerseRef.Verse);                    
+                    // For "ff." include the next verse, too:
+                    if (includeMultiple)
+                    {
+                        nextVerse = Canon.GetSuccessorVerse(nextVerse);
+                    }
+                    return new List<VerseReference>()
+                    {
+                        new RangeVerseReference(targetVerseRef.Verse, nextVerse, reference)
+                    };
+                }
             }
             else if (iRangeSeparator >= 0 && iAdditionalVerseSeparator >= 0)
             {
