@@ -26,3 +26,9 @@ Example: <code>NeueHtmlOsisConverter /path/to/NeÜ gerneue.osis.xml</code>
 
 Input HTML file to the left, generated output on the right: ![Input and Output files](InputOutput.png)
 gerneue module viewed in Bibletime: ![Bibletime with NeÜ](Result.png)
+
+## Conversion to SWORD module
+
+- The conversion to a SWORD module is done by the <code>osis2mod</code> tool. 
+- It can be obtained by [different ways](https://wiki.crosswire.org/DevTools:Modules#Collect_and_Install_Software_Tools), e.g. by installing package <code>libsword-utils</code> by apt on Ubuntu.
+- Example: <code>osis2mod .sword/modules/texts/ztext/gerneue/ path/To/gerneue.osis.xml -v German -z z</code>. This will replace downloaded NeÜ SWORD texts by the new input from gerneue.osis.xml. (Before doing that, it is necessary to have downloaded the complete gerneue package from official channel once, so the NeÜ is accessible for SWORD apps.)
