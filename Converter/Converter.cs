@@ -616,7 +616,7 @@ public class Converter : IConverter
                         && !uriText.ToLower().Trim().StartsWith("#top"))
                     {
                         string? successorText = null;
-                        if (currentNode.NextSibling?.Name.ToLower() == "#text" 
+                        if (currentNode.NextSibling?.Name.ToLower() == "#text"
                             && currentNode.NextSibling.ParentNode == currentNode.ParentNode)
                         {
                             successorText = currentNode.NextSibling.InnerText;
@@ -646,7 +646,7 @@ public class Converter : IConverter
                     else
                     {
                         OsisFormatter.HyperLink(refText, new Uri(uriText));
-                    }                    
+                    }
                 }
                 break;
 
@@ -756,7 +756,7 @@ public class Converter : IConverter
         }
 
         return false;
-    }   
+    }
 
     protected void ConvertReference(string refText, string? successorText)
     {
@@ -1030,10 +1030,14 @@ public class Converter : IConverter
         {
             if (ReferenceBook == null || string.IsNullOrWhiteSpace(ReferenceBookName)) 
             {
-                throw new FormatException($"Missing book name in refernce string '{referenceBookText}'! " + GetCurrentVerseAsString());
+                // No book given -> reference is to a verse in the current book.
+                ReferenceBook = BookInfo.Book;
+                ReferenceBookName = BookInfo.BookNames.First();
             }
-
-            // No book given -> reference is for the previous book. Usefol for "Mt 1,2;4,3" and likewise references.            
+            else
+            {
+                // No book given -> reference is for the previous book. Usefol for "Mt 1,2;4,3" and likewise references.            
+            }
         } 
         else 
         {
@@ -1045,8 +1049,14 @@ public class Converter : IConverter
                 throw new FormatException($"Unkown book name '{referenceBookText}'! " + GetCurrentVerseAsString());
 
             ReferenceBook = (Book)match;
-            ReferenceBookName = (string)referenceBookText;            
+            ReferenceBookName = (string)referenceBookText;
         }
+    }
+
+    protected void ClearReferenceBookCache()
+    {
+        ReferenceBook = null;
+        ReferenceBookName = null;
     }
 
     protected void ConvertBook(BookInfo bookInfo, DirectoryInfo htmlFolder)
@@ -1366,8 +1376,10 @@ public class Converter : IConverter
         OsisFormatter.EndFootnote();
         StartedFootnote = false;
 
+        ClearReferenceBookCache();
+
         return OsisFormatter;
-    }
+    }    
 
     protected OsisFormatter StartParagraph()
     {
