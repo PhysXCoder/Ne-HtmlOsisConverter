@@ -301,32 +301,19 @@ public class OsisFormatter
 
     public OsisFormatter Reference(VerseReference verseRef)
     {
-        string verseRefText = $"{NamingScheme[verseRef.Verse.Book]}.{verseRef.Verse.ChapterNumber}.{verseRef.Verse.VerseNumber}";
+        string verseRefText = GetSingleReferenceText(verseRef.Verse);
+
         if (verseRef is SingleVerseReference singleVerseRef)
         {
             // Nothing additional necessary
         }
         else if (verseRef is RangeVerseReference rangeVerseRef)
         {
-            verseRefText += $"-{NamingScheme[rangeVerseRef.EndVerse.Book]}.{rangeVerseRef.EndVerse.ChapterNumber}.{rangeVerseRef.EndVerse.VerseNumber}";
+            verseRefText += "-" + GetSingleReferenceText(rangeVerseRef.EndVerse);
         }
         else if (verseRef is MultipleVerseReference multipleVerseRef)
         {
-            verseRefText = "";
-            bool first = true;
-            foreach (var verse in multipleVerseRef.VerseList)
-            {
-                if (first)
-                {
-                    first = false;                    
-                }
-                else 
-                {
-                    verseRefText += ' ';
-                }
-
-                verseRefText += $"{NamingScheme[verse.Book]}.{verse.ChapterNumber}.{verse.VerseNumber}";
-            }
+            verseRefText = string.Join(" ", multipleVerseRef.VerseList.Select(GetSingleReferenceText));
         }
         else
         {
@@ -335,6 +322,22 @@ public class OsisFormatter
 
         Write($"<reference osisRef=\"{verseRefText}\">{verseRef.Text}</reference>");
         return this;
+    }
+
+    private string GetSingleReferenceText(Verse verse)
+    {        
+        if (verse.VerseNumber != 0)
+        {
+            return $"{NamingScheme[verse.Book]}.{verse.ChapterNumber}.{verse.VerseNumber}";
+        }
+        else if (verse.ChapterNumber != 0)
+        {
+            return $"{NamingScheme[verse.Book]}.{verse.ChapterNumber}";
+        }
+        else
+        {
+            return $"{NamingScheme[verse.Book]}";
+        }
     }
 
     public OsisFormatter WriteOsisBeginning(string workName, string workTitle)
