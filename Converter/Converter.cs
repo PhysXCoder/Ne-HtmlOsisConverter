@@ -290,7 +290,7 @@ public class Converter : IConverter
                 }
             }
             else
-            {                
+            {
                 nodesToCheck.PrependRangeUnique(node.ChildNodes);
                 nodesToCheck.AddUnique(node.NextSibling);
             }
@@ -425,6 +425,11 @@ public class Converter : IConverter
             case "b":
                 var bold = currentNode.InnerText;
                 OsisFormatter.Text(OsisTextStyle.Bold, bold);
+                break;
+
+            case "i":
+                var italics = currentNode.InnerText;
+                OsisFormatter.Text(OsisTextStyle.Italic, italics);
                 break;
 
             case "h2":
@@ -751,8 +756,8 @@ public class Converter : IConverter
             // Terminate conversion of this file
             return true;
 
-         default:
-                break;
+        default:
+            break;
         }
 
         return false;
