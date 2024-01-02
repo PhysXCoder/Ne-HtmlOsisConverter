@@ -28,6 +28,8 @@ public abstract class VerseReference
         Verse = verse;
         Text = text;
     }
+
+    public abstract IReadOnlyList<Verse> GetAllSingleVerses(ICanon canon);
 }
 
 public class SingleVerseReference : VerseReference
@@ -35,6 +37,9 @@ public class SingleVerseReference : VerseReference
     public SingleVerseReference(Verse verse, string text)
         : base(verse, text)
     { }
+
+    public override IReadOnlyList<Verse> GetAllSingleVerses(ICanon canon) => 
+        (new List<Verse>() {Verse}).AsReadOnly();
 }
 
 public class RangeVerseReference : VerseReference
@@ -49,6 +54,22 @@ public class RangeVerseReference : VerseReference
     {
         EndVerse = endVerse;
     }
+
+    public override IReadOnlyList<Verse> GetAllSingleVerses(ICanon canon)
+    {
+        var verses = new List<Verse>();
+        var currentVerse = Verse;
+        while (currentVerse != EndVerse && currentVerse.Book <= EndVerse.Book) 
+        {
+            verses.Add(currentVerse);
+            currentVerse = canon.GetSuccessorVerse(currentVerse);
+        };
+        if (!verses.Contains(EndVerse)) 
+        {
+            verses.Add(EndVerse);
+        }        
+        return verses.AsReadOnly();
+    }
 }
 
 public class MultipleVerseReference : VerseReference
@@ -60,4 +81,7 @@ public class MultipleVerseReference : VerseReference
     {
         VerseList = references.ToList();
     }
+
+    public override IReadOnlyList<Verse> GetAllSingleVerses(ICanon canon) =>
+        ((List<Verse>)VerseList).AsReadOnly();
 }

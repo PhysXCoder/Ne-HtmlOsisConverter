@@ -1155,7 +1155,7 @@ public class Converter : IConverter
     protected void TryScanFootnote(HtmlNode node)
     {
         if (node.Name.ToLower() == "div" && node.HasClass(HtmlClassFootnote))
-        {            
+        {
             var childNodes = node.ChildNodes.ToList();
 
             // First node contains the verse reference
@@ -1198,19 +1198,19 @@ public class Converter : IConverter
             // Parse the verse reference
             var references = ParseReference(referenceWithBooknameText);
             if (!references.Any()) throw new FormatException($"Verse reference is empty in '{node.InnerHtml}'! " + GetCurrentBookAsString());
-            var firstVerseRef = references.First();
-            SingleVerseReference? verseRef = firstVerseRef as SingleVerseReference;
-            if (verseRef == null) 
+            foreach (var foundRef in references) 
             {
-                System.Console.Out.WriteLine($"Warning: Verse reference in Node '{node.InnerHtml}' reduced to its start! " + GetCurrentBookAsString());
-                verseRef = new SingleVerseReference(firstVerseRef.Verse, firstVerseRef.Text);
-            }            
-            // Save converted footnote
-            if (!FootnoteByVerse.ContainsKey(verseRef.Verse))
-            {
-                FootnoteByVerse.Add(verseRef.Verse, new List<HtmlNode>());
+                foreach (var verse in foundRef.GetAllSingleVerses(Canon))
+                {
+                    // Save converted footnote
+                    if (!FootnoteByVerse.ContainsKey(verse))
+                    {
+                        FootnoteByVerse.Add(verse, new List<HtmlNode>());
+                    }
+                    FootnoteByVerse[verse].Add(node);
+                }
             }
-            FootnoteByVerse[verseRef.Verse].Add(node);
+            
             return;
         }
         
