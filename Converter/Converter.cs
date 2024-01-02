@@ -434,6 +434,10 @@ public class Converter : IConverter
                     OsisFormatter.EndLine();
                     EndParagraph();                    
                 }
+                else if (currentNode.HasClass(HtmlClassFootnote))
+                {
+                    // Ignore footnotes here. Instead, insert them where marked with '*'.
+                }
                 else
                 {
                     goto default;
@@ -774,7 +778,16 @@ public class Converter : IConverter
             // Terminate conversion of this file
             return true;
 
+        case "ul":
+            // Ignore
+            break;
+
+        case "br":
+            OsisFormatter.LineBreak();
+            break;
+
          default:
+            System.Console.Out.WriteLine($"Warning: Unrecognized HTML element '{currentNode.Name}'! " + GetCurrentBookAsString());            
             break;
         }
 
