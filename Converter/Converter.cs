@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 using HtmlAgilityPack;
 using NeueHtmlOsisConverter.Bible;
 using NeueHtmlOsisConverter.Extensions;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace NeueHtmlOsisConverter.Converter;
@@ -110,24 +111,31 @@ public class Converter : IConverter
         };
 
         using (StringWriter = new StringBuilderWriter())
-        using (FileWriter = new FileTextWriter(new StreamWriter(
-            outputFile.FullName, System.Text.Encoding.UTF8, fsOptions)))
+        using (var streamWriter = new StreamWriter(outputFile.FullName, System.Text.Encoding.UTF8, fsOptions))        
         {
-            OsisFormatter.Writer = FileWriter;
-
-            OsisFormatter.WriteOsisBeginning(WorkName, WorkTitle);
-
-            ConvertForeword(htmlFolder);
-
-            foreach(var bookInfo in Canon.Books)
-            { 
-                ResetTempBookVar();
-                ConvertBook(bookInfo, htmlFolder);
+            if (Debugger.IsAttached) 
+            {
+                streamWriter.AutoFlush = true;
             }
+            
+            using (FileWriter = new FileTextWriter(streamWriter)) 
+            {
+                OsisFormatter.Writer = FileWriter;
 
-            OsisFormatter.WriteOsisEnding();
-        }
-        OsisFormatter.Writer = new FileTextWriter(TextWriter.Null);
+                OsisFormatter.WriteOsisBeginning(WorkName, WorkTitle);
+
+                ConvertForeword(htmlFolder);
+
+                foreach(var bookInfo in Canon.Books)
+                { 
+                    ResetTempBookVar();
+                    ConvertBook(bookInfo, htmlFolder);
+                }
+
+                OsisFormatter.WriteOsisEnding();
+                OsisFormatter.Writer = new FileTextWriter(TextWriter.Null);
+            }
+        }        
     }
 
     protected void ResetTempBookVar()
@@ -411,10 +419,20 @@ public class Converter : IConverter
                     }
                     StartParagraph();
                     foreach(var childNode in currentNode.ChildNodes)
-                    {                    
+                    {
                         ConvertNode(childNode, foreword, emphasis);
                     }
                     EndParagraph();
+                }
+                else if (foreword)
+                {
+                    StartParagraph();
+                    foreach(var childNode in currentNode.ChildNodes)
+                    {
+                        ConvertNode(childNode, foreword, emphasis);
+                    }
+                    OsisFormatter.LineBreak();
+                    EndParagraph();                    
                 }
                 else
                 {
@@ -756,7 +774,7 @@ public class Converter : IConverter
             // Terminate conversion of this file
             return true;
 
-        default:
+         default:
             break;
         }
 
