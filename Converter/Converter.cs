@@ -681,7 +681,11 @@ public class Converter : IConverter
                 if (currentNode.HasClass(HtmlClassChapter))
                 {
                     uint chapterNumber;
-                    if (!uint.TryParse(currentNode.InnerText, out chapterNumber)) 
+                    var chapterStr = currentNode.InnerText
+                        .Replace('\\', ' ')
+                        .Replace('/', ' ')
+                        .Trim();
+                    if (!uint.TryParse(chapterStr, out chapterNumber))
                     {
                         throw new FormatException($"Invalid chapter number in node '{currentNode.InnerHtml}'! " + GetCurrentVerseAsString());
                     }
