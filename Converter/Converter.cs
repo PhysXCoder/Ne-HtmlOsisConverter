@@ -430,8 +430,8 @@ public class Converter : IConverter
                     foreach(var childNode in currentNode.ChildNodes)
                     {
                         ConvertNode(childNode, foreword, emphasis);
-                    }
-                    OsisFormatter.LineBreak();
+                    }                    
+                    OsisFormatter.EndLine();
                     EndParagraph();                    
                 }
                 else
