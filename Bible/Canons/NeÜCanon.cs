@@ -522,7 +522,7 @@ public class NeÜCanon : CanonBase, ICanon
             0,
             14, 18, 19, 16, 14, 20, 28, 13, 28, 39,
             40, 29, 25
-        }, new List<string>() { "Heb", "Hebr", "Hebräer", "Hebraeer" }),
+        }, new List<string>() { "Heb", "Hebr", "Hebräer", "Hebraeer", "Hebräerbrief", "Hebraeerbrief" }),
 
         new BookInfo(Book.James, new List<ushort>()
         {
