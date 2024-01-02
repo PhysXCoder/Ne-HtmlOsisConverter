@@ -661,7 +661,7 @@ public class Converter : IConverter
                 }
                 else
                 {
-                    if (!uriText.ToLower().Contains("www"))
+                    if (!uriText.ToLower().Contains("www") && !uriText.ToLower().Contains("http"))
                     {
                         System.Console.Out.WriteLine($"Warning: Ignoring Hyperlink to '{uriText}'! " + GetCurrentVerseAsString());
                         var linkText = currentNode.InnerText.Trim();
