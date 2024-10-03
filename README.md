@@ -2,7 +2,7 @@
 
 FOSS program to convert *Neue evangelistische Übersetzung (NeÜ)* of the Bible to OSIS format. Input is HTML files of the Translator Mr. Vanheiden. Output is a single OSIS XML file used by Crosswire Bible Society's SWORD Project to provide the NeÜ Bible.
 
-Licensed under GPLv3, built with dotnet 6.0 on Kubuntu 22.04.1 and dotnet 7.0.114 on Kubuntu 23.10
+Licensed under GPLv3, built with dotnet 6.0 on Kubuntu 22.04.1, dotnet 7.0.114 on Kubuntu 23.10 and dotnet 8.0.108 on Fedora KDE 40
 
 ## Usage
 Start the program with 2 command line parameters:
