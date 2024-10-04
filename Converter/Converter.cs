@@ -1,6 +1,6 @@
 /*
 HtmlOsisConverter - Converts NeÜ Bible HTML files to OSIS XML.
-Copyright (C) 2022 PhysXCoder
+Copyright (C) 2022-2024 PhysXCoder
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -329,7 +329,7 @@ public class Converter : IConverter
                         .EndParagraph();
                     return false;
                 }
-                if (IsOnlyEmptyChildren(currentNode)) break;                
+                if (IsOnlyEmptyChildren(currentNode)) break;
                 
                 if (!StartedParagraph)
                 {
@@ -340,7 +340,7 @@ public class Converter : IConverter
                     var end = ConvertNode(childNode, foreword, emphasis);
                     if (end) return end;
                 }
-                if (StartedParagraph) OsisFormatter.EndLine();                
+                if (StartedParagraph) OsisFormatter.EndLine();
                 if (StartedVerse && IsSuccessorNodeVerseOrChapter(currentNode))
                 {
                     EndVerse();
@@ -452,6 +452,11 @@ public class Converter : IConverter
             case "i":
                 var italics = currentNode.InnerText;
                 OsisFormatter.Text(OsisTextStyle.Italic, italics);
+                break;
+
+            case "u":
+                var underline = currentNode.InnerText;
+                OsisFormatter.Text(OsisTextStyle.Underline, underline);
                 break;
 
             case "h2":

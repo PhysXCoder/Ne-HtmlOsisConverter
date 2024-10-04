@@ -1,6 +1,6 @@
 /*
 HtmlOsisConverter - Converts NeÜ Bible HTML files to OSIS XML.
-Copyright (C) 2022 PhysXCoder
+Copyright (C) 2022-2024 PhysXCoder
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -23,4 +23,5 @@ public enum OsisTextStyle
     None = 0,
     Bold = 1 << 0, 
     Italic = 1 << 1,
+    Underline = 1 << 2,
 }
